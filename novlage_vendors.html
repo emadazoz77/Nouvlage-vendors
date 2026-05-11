@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Novlage — Approved Vendors</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root {
+    --cream:   #FAF7F2;
+    --dark:    #1C1A18;
+    --gold:    #B8965A;
+    --gold-lt: #D4AF7A;
+    --red:     #C0392B;
+    --green:   #1E6E4B;
+    --border:  #E0D8CC;
+    --card:    #FFFFFF;
+    --muted:   #7A7167;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--dark);
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--dark);
+    padding: 28px 24px 22px;
+    text-align: center;
+    position: relative;
+  }
+  header .eyebrow {
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  header .subtitle {
+    font-size: 12px;
+    color: #aaa;
+    margin-top: 4px;
+    letter-spacing: 1px;
+  }
+  .gold-line {
+    width: 40px; height: 2px;
+    background: var(--gold);
+    margin: 10px auto 0;
+  }
+
+  /* ── Main ── */
+  main { max-width: 640px; margin: 0 auto; padding: 24px 16px 80px; }
+
+  /* ── Status badge ── */
+  .status-bar {
+    background: var(--green);
+    color: #fff;
+    text-align: center;
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-radius: 6px;
+    margin-bottom: 20px;
+  }
+
+  /* ── Vendor list ── */
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+    padding-left: 2px;
+  }
+
+  .vendor-list { list-style: none; margin-bottom: 28px; }
+
+  .vendor-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: box-shadow .2s;
+  }
+  .vendor-item:hover { box-shadow: 0 2px 12px rgba(0,0,0,.07); }
+
+  .vendor-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    flex-shrink: 0;
+    margin-top: 5px;
+  }
+
+  .vendor-name {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--dark);
+    line-height: 1.3;
+  }
+  .vendor-product {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* ── QR section ── */
+  .qr-section {
+    background: var(--dark);
+    border-radius: 14px;
+    padding: 24px;
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .qr-section h3 {
+    font-family: 'Playfair Display', serif;
+    color: var(--gold);
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+  .qr-section p {
+    color: #aaa;
+    font-size: 11px;
+    margin-bottom: 16px;
+    letter-spacing: .5px;
+  }
+  #qrcode {
+    display: inline-block;
+    background: #fff;
+    padding: 12px;
+    border-radius: 8px;
+  }
+  .qr-hint {
+    color: #888;
+    font-size: 10px;
+    margin-top: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* ── Admin button ── */
+  .admin-btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background: transparent;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all .2s;
+  }
+  .admin-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* ── Modal overlay ── */
+  .modal-bg {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.65);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  .modal-bg.open { display: flex; }
+
+  .modal {
+    background: var(--card);
+    border-radius: 16px;
+    width: 100%; max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 28px 24px;
+  }
+  .modal h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+  .modal .sub { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+
+  /* password screen */
+  #pw-screen input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: 'DM Sans', sans-serif;
+    margin-bottom: 10px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  #pw-screen input:focus { border-color: var(--gold); }
+  .err { color: var(--red); font-size: 12px; margin-bottom: 10px; display: none; }
+
+  /* edit screen */
+  #edit-screen { display: none; }
+
+  .edit-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 7px;
+    background: #fafafa;
+  }
+  .edit-item input[type=text] {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+    color: var(--dark);
+  }
+  .edit-item input[type=text]:focus {
+    background: #fff;
+    border-bottom: 1px solid var(--gold);
+  }
+  .del-btn {
+    background: none; border: none;
+    color: #ccc; cursor: pointer;
+    font-size: 18px; line-height: 1;
+    padding: 2px 4px;
+    transition: color .15s;
+  }
+  .del-btn:hover { color: var(--red); }
+
+  .add-row {
+    display: flex; gap: 8px; margin-top: 12px;
+  }
+  .add-row input {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1.5px dashed var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+  }
+  .add-row input:focus { border-color: var(--gold); }
+
+  /* buttons */
+  .btn {
+    padding: 11px 20px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    letter-spacing: .5px;
+    transition: all .15s;
+  }
+  .btn-gold { background: var(--gold); color: #fff; }
+  .btn-gold:hover { background: var(--gold-lt); }
+  .btn-dark { background: var(--dark); color: #fff; }
+  .btn-dark:hover { opacity: .85; }
+  .btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--muted); }
+  .btn-outline:hover { border-color: var(--red); color: var(--red); }
+
+  .modal-actions {
+    display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap;
+  }
+
+  /* last updated */
+  .last-updated {
+    text-align: center;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 16px;
+    letter-spacing: .5px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Novlage Aesthetic Clinics</div>
+  <h1>Approved Vendors</h1>
+  <div class="subtitle">Authorized for clinic visits</div>
+  <div class="gold-line"></div>
+</header>
+
+<main>
+  <div class="status-bar">✓ Currently Approved — May 2026</div>
+
+  <p class="section-label">Authorized Companies</p>
+  <ul class="vendor-list" id="vendorList"></ul>
+
+  <div class="last-updated" id="lastUpdated"></div>
+
+  <div class="qr-section">
+    <h3>Share This Page</h3>
+    <p>Scan to open on any device</p>
+    <div id="qrcode"></div>
+    <div class="qr-hint">Print & place at reception</div>
+  </div>
+
+  <button class="admin-btn" onclick="openAdmin()">⚙ Admin — Edit List</button>
+</main>
+
+<!-- Admin Modal -->
+<div class="modal-bg" id="modalBg" onclick="handleBgClick(event)">
+  <div class="modal">
+    <h2>Admin Panel</h2>
+    <div class="sub">Novlage Clinic Management</div>
+
+    <!-- Password screen -->
+    <div id="pw-screen">
+      <input type="password" id="pwInput" placeholder="Enter admin password"
+             onkeydown="if(event.key==='Enter') checkPw()">
+      <div class="err" id="pwErr">Incorrect password. Try again.</div>
+      <div class="modal-actions">
+        <button class="btn btn-gold" onclick="checkPw()">Unlock</button>
+        <button class="btn btn-outline" onclick="closeAdmin()">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Edit screen -->
+    <div id="edit-screen">
+      <p class="section-label" style="margin-bottom:10px">Edit Vendor List</p>
+      <div id="editList"></div>
+
+      <div class="add-row">
+        <input type="text" id="newVendorInput" placeholder="Add new company name…"
+               onkeydown="if(event.key==='Enter') addVendor()">
+        <button class="btn btn-dark" onclick="addVendor()">+ Add</button>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-gold" onclick="saveAndClose()">Save &amp; Close</button>
+        <button class="btn btn-outline" onclick="closeAdmin()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Default vendor list ──────────────────────────────────────────────────
+const DEFAULT_VENDORS = [
+  { name: "L'Oréal Group",         product: "CeraVe · Vichy · La Roche-Posay" },
+  { name: "Dermactive",             product: "" },
+  { name: "Eucerin",                product: "OTC" },
+  { name: "Majestic",               product: "" },
+  { name: "SVR",                    product: "" },
+  { name: "Neutrogena",             product: "" },
+  { name: "Fillmed Co.",            product: "" },
+  { name: "Vision Group",           product: "Skin Fill" },
+  { name: "Promoitalia",            product: "" },
+  { name: "Glowmedics",             product: "Dermaqual" },
+  { name: "UTC",                    product: "Dives" },
+  { name: "IBSA",                   product: "Profhilo · Pro Derma · Tajmeel" },
+  { name: "Teoxane",                product: "" },
+  { name: "Solaris",                product: "Evetox" },
+  { name: "Deka",                   product: "" },
+  { name: "VTeck / New Life Medical", product: "Exosignal" },
+  { name: "United Health Medical",  product: "" },
+  { name: "Vuture",                 product: "NAD+" },
+  { name: "Eva Pharma",             product: "Mounjaro" },
+  { name: "Novo Nordisk",           product: "Wegovy" },
+];
+
+const ADMIN_PASSWORD = "novlage2026";
+const STORAGE_KEY    = "novlage_vendors_v1";
+const DATE_KEY       = "novlage_updated";
+
+// ── Load / Save ───────────────────────────────────────────────────────────
+function loadVendors() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : DEFAULT_VENDORS;
+  } catch { return DEFAULT_VENDORS; }
+}
+
+function saveVendors(vendors) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(vendors));
+  localStorage.setItem(DATE_KEY, new Date().toLocaleDateString('en-GB',
+    { day:'2-digit', month:'long', year:'numeric' }));
+}
+
+// ── Render public list ────────────────────────────────────────────────────
+function renderList() {
+  const vendors = loadVendors();
+  const ul = document.getElementById('vendorList');
+  ul.innerHTML = vendors.map(v => `
+    <li class="vendor-item">
+      <div class="vendor-dot"></div>
+      <div>
+        <div class="vendor-name">${escHtml(v.name)}</div>
+        ${v.product ? `<div class="vendor-product">${escHtml(v.product)}</div>` : ''}
+      </div>
+    </li>`).join('');
+
+  const upd = localStorage.getItem(DATE_KEY);
+  document.getElementById('lastUpdated').textContent =
+    upd ? `Last updated: ${upd}` : '';
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── QR Code ───────────────────────────────────────────────────────────────
+function makeQR() {
+  new QRCode(document.getElementById("qrcode"), {
+    text: window.location.href,
+    width: 160, height: 160,
+    colorDark: "#1C1A18", colorLight: "#ffffff",
+    correctLevel: QRCode.CorrectLevel.M
+  });
+}
+
+// ── Admin modal ───────────────────────────────────────────────────────────
+let editVendors = [];
+
+function openAdmin() {
+  document.getElementById('modalBg').classList.add('open');
+  document.getElementById('pw-screen').style.display = '';
+  document.getElementById('edit-screen').style.display = 'none';
+  document.getElementById('pwInput').value = '';
+  document.getElementById('pwErr').style.display = 'none';
+  setTimeout(() => document.getElementById('pwInput').focus(), 100);
+}
+
+function closeAdmin() {
+  document.getElementById('modalBg').classList.remove('open');
+}
+
+function handleBgClick(e) {
+  if (e.target === document.getElementById('modalBg')) closeAdmin();
+}
+
+function checkPw() {
+  const val = document.getElementById('pwInput').value;
+  if (val === ADMIN_PASSWORD) {
+    document.getElementById('pw-screen').style.display = 'none';
+    document.getElementById('edit-screen').style.display = '';
+    editVendors = JSON.parse(JSON.stringify(loadVendors()));
+    renderEditList();
+  } else {
+    document.getElementById('pwErr').style.display = 'block';
+    document.getElementById('pwInput').value = '';
+    document.getElementById('pwInput').focus();
+  }
+}
+
+function renderEditList() {
+  const el = document.getElementById('editList');
+  el.innerHTML = editVendors.map((v, i) => `
+    <div class="edit-item" id="ei-${i}">
+      <input type="text" value="${escHtml(v.name)}"
+             oninput="editVendors[${i}].name=this.value"
+             placeholder="Company name">
+      <input type="text" value="${escHtml(v.product)}"
+             oninput="editVendors[${i}].product=this.value"
+             placeholder="Product (optional)" style="max-width:150px;font-size:12px;color:#888">
+      <button class="del-btn" onclick="removeVendor(${i})">×</button>
+    </div>`).join('');
+}
+
+function removeVendor(i) {
+  editVendors.splice(i, 1);
+  renderEditList();
+}
+
+function addVendor() {
+  const inp = document.getElementById('newVendorInput');
+  const val = inp.value.trim();
+  if (!val) return;
+  editVendors.push({ name: val, product: '' });
+  renderEditList();
+  inp.value = '';
+  // scroll edit list to bottom
+  const el = document.getElementById('editList');
+  el.scrollTop = el.scrollHeight;
+}
+
+function saveAndClose() {
+  // filter blanks
+  const cleaned = editVendors.filter(v => v.name.trim());
+  saveVendors(cleaned);
+  closeAdmin();
+  renderList();
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+renderList();
+makeQR();
+</script>
+</body>
+</html>
